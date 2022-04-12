@@ -1,0 +1,46 @@
+
+# Los comentarios en este documentos fueron generados por los integrantesd el equipo
+
+# se definen paramtros/constantes
+
+CLIENT = suma_client
+SERVER = suma_server
+
+SOURCES_CLNT.c = 
+SOURCES_CLNT.h = 
+SOURCES_SVC.c = 
+SOURCES_SVC.h = 
+SOURCES.x = suma.x
+
+TARGETS_SVC.c = suma_svc.c suma_server.c suma_xdr.c 
+TARGETS_CLNT.c = suma_clnt.c suma_client.c suma_xdr.c 
+TARGETS = suma.h suma_xdr.c suma_clnt.c suma_svc.c suma_client.c suma_server.c
+
+OBJECTS_CLNT = $(SOURCES_CLNT.c:%.c=%.o) $(TARGETS_CLNT.c:%.c=%.o)
+OBJECTS_SVC = $(SOURCES_SVC.c:%.c=%.o) $(TARGETS_SVC.c:%.c=%.o)
+# se definen las opcines a usar por el compilador
+
+CFLAGS += -g 
+LDLIBS += -lnsl
+RPCGENFLAGS = 
+
+# se definen los targets o acciones que se debenm llevar a cabo para el proceso de compilacion del código
+
+all : $(CLIENT) $(SERVER)
+
+$(TARGETS) : $(SOURCES.x) 
+	rpcgen $(RPCGENFLAGS) $(SOURCES.x)
+
+$(OBJECTS_CLNT) : $(SOURCES_CLNT.c) $(SOURCES_CLNT.h) $(TARGETS_CLNT.c) 
+
+$(OBJECTS_SVC) : $(SOURCES_SVC.c) $(SOURCES_SVC.h) $(TARGETS_SVC.c) 
+
+$(CLIENT) : $(OBJECTS_CLNT) 
+	$(LINK.c) -o $(CLIENT) $(OBJECTS_CLNT) $(LDLIBS) 
+
+$(SERVER) : $(OBJECTS_SVC) 
+	$(LINK.c) -o $(SERVER) $(OBJECTS_SVC) $(LDLIBS)
+
+ clean:
+	 $(RM) core $(TARGETS) $(OBJECTS_CLNT) $(OBJECTS_SVC) $(CLIENT) $(SERVER)
+
